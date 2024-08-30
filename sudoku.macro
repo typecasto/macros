@@ -1,0 +1,90 @@
+ - 1 2 7 5 3 6 - 9
+ 9 4 - - 8 2 1 7 5
+ 6 - 5 4 - 1 - 8 -
+ 1 - 4 2 3 - 8 9 6
+ 3 6 9 8 - - - 2 1
+ - 8 7 - 6 9 5 - 4
+ - 2 - 9 7 4 3 - -
+ 4 3 - - 2 6 9 - 7
+ 7 - 6 3 1 - - 5 2
+
+# Full
+ggO:setl<C-V><Space>nohlsearch<C-V><CR>:%s/\s//ge<C-V><CR>:%s/\v(.\|\d)/<C-V><Space>&/g<C-V><CR>:g/\v^$/<C-V><Space>d<C-V><CR>G9o@h0<C-V><Esc><C-V><C-V>8kg<C-V><C-A>G9o@v0<C-V><Esc><C-V><C-V>8kg<C-V><C-A>G9o@s0<C-V><Esc><C-V><C-V>8kg<C-V><C-A>G0<C-V><C-V>26kxgvgJA@c<C-V><Esc>0"tddo<C-V><lt>@e><C-V><Esc><C-V><lt><C-V><lt>^@u<Esc>0"iy$ddggOddgg0y/\v(-\zs\|\<C-V><lt>\zs)<C-V><CR>Go<C-V><Esc>po<C-V><Esc>kVGJ:s/\v\s\|\<C-V><lt>\|-//g<C-V><CR>:s/\d/1+/ge<C-V><CR>A1<C-V><Esc>^cc<C-V><C-R>=<C-V><C-R>"<C-V><CR>e<C-V><Esc>^d$"_ddA<C-V><lt><C-V><C-R>"><C-V><Esc>GoGddoSolved.<C-V><C-V><C-V><Esc><C-V><lt><C-V><lt>f!<C-V><CR>82<C-V><CR>$yi<C-V><lt>gg0@"r1@u<C-V><Esc>9G/82<C-V><CR>j^y$GV2k"_d@"<Esc>0"cy$ddggOdd$yi>gg0@"ylGo<C-V><C-R>"<C-V><CR>GV3kd$yi<C-V><lt>gg0@"r-G$da>Go<C-V><C-V><C-V><Esc>@b<C-V><CR>9<C-V><CR>GV3kd$yi<C-V><lt>gg0@"<C-V><C-V><C-V><C-A>@u<C-V><Esc>10G$/9<C-V><CR>j^y$@"<Esc>0"by$ddggOG"tp@n<Esc>0"uy$ddggOG02x@"GI@n<C-V><Esc>:s/\v(.).{-}\1/@b/e<C-V><CR>$F@y2l"_dd@"<Esc>0"ny$ddggOxgg@"jkyyGp:s/[<C-V><Space>-]//g<C-V><CR><Esc>0"hy$ddggOxgg0@"e<C-V><C-V>8jyGo<C-V><Esc>pVGgJ:s/-//ge<C-V><CR><Esc>0"vy$ddggOxgg0@=3*((<C-V><C-R>"-1)%3)+1<C-V><CR>e@=((<C-V><C-R>"-1)/3)*3+1<C-V><CR>jk<C-V><C-V>eejjyGo<C-V><Esc>pVGgJ:s/[<C-V><Space>-]//g<C-V><CR><Esc>0"sy$ddggOGccUnsolvable.<C-V><Esc>f!<Esc>0"ey$dd@i
+
+
+# Build macro
+z - build one macro (DO NOT USE @z HERE, use j^"zy$ )
+	$?^\SjV/^\Sk9999<gv:s/<!.\+!>//gegv:join!kI"0y2lj^@"y$u
+j - build ALL macros (using @z here is fine)
+	/^# MacrosjV
+	/^# End macrosk
+	:g/^[a-z]/normal @z
+q - add a macro to the next macro (y is macro, x is "key)
+	$?^\SjV/^\Sk9999<gv:s/<!.\+!>//gegv:join!kI"0"xy2lj"yy$umx12GOggO"=keytrans(getreg('y'))p:s/\\/\\\\/geA0"xpAy$dd'x
+	$?^\SjV/^\Sk9999<gv:s/<!.\+!>//gegv:join!kI"0"xy2lj"yy$umx12GO"=keytrans(getreg('y'))p:s/\v\<(\S|-){-}\>/<C-V>&/ge:s/|/\\|/geIggOA<Esc>0xy$dd'x
+k - keytrans
+	
+# end build
+
+# Registers
+t - constrainTs, holds the uniqueness constraint string h1h2h3...h9v1...v9s1...s9c
+x, y - immediates
+
+# Macros Needed
+i - initial program load, shift over the sudoku, set up the constraint search and result vectors, set up bottom of the stack, execute c
+	:setl nohlsearch
+	:%s/\s//ge:%s/\v(.|\d)/ &/g
+	:g/\v^$/ d
+	<! setup "t !>
+	G9o@h08kg
+	G9o@v08kg
+	G9o@s08kg
+	G026kxgvgJA@c0"tdd
+	<! setup the stack !>
+	o<@e><<^
+	<! macro setup? or put this in a build macro and autogen it !>
+	@u
+c - continue, find the next - in the grid, push it to the stack, and keep changing it until it works. calls u or q
+	ddgg0y/\v(-\zs|\<\zs)GopokVGJ:s/\v\s|\<|-//g:s/\d/1+/geA1^cc="e^d$"_ddA<"><! push to the stack !>
+	<! setup conditional search for 82 !>
+		<! macro on 82 !>Go
+			GddoSolved.<<f!
+		<! macro on no 82 !>82
+			$yi<gg0@"r1@u
+		<! search and store in @x !>
+		9G/82j^y$GV2k"_d@"
+	<! replace stack entry with a 1 !>
+	<! execute search result !>
+b - backtrack, either increase this entry and call u, or backtrack and call b
+	dd$yi>gg0@"ylGo
+		"
+		<! macro if 9 !>
+			GV3kd$yi<gg0@"r-G$da>Go@b
+		<! macro if not 9 !>
+		9
+			GV3kd$yi<gg0@"@u
+		
+		10G$/9j^y$@"
+u - check uniqueness constraints for current board state (includes list update) ends with a call to b or c
+	<! if this fails, the @n macro will call @b !>
+	<! if this succeeds, it implicitly calls c because "t ends with c !>
+	<! paste constraint queue !>
+	G"tp@n
+n - check a uniquness constraint, if satisfied move on to the next. executes either b (if fail), c (if success and this is the last constraint), or itself (otherwise)
+	<! setup search vector !>
+	G02x@"GI@n
+	<! perform search !>
+	:s/\v(.).{-}\1/@b/e
+	$F@y2l"_dd@"
+h - horizontal, copy from row X where X is the character after h
+	xgg@"jkyyGp:s/[ -]//g
+v - vertical, copy from column X where X is the character after v
+	xgg0@"e8jyGopVGgJ:s/-//ge
+s - square, copy from box X where X is the character after s
+	xgg0@=3*(("-1)%3)+1e@=(("-1)/3)*3+1jkeejjyGopVGgJ:s/[ -]//g
+e - error
+	GccUnsolvable.f!
+# End macros
+	GccUnsolvable.f! <! the macro itself !>
+	GccUnsolvable.<C-V><Esc>f! <! as it appears in the larger keybind !>
+
